@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <link rel="stylesheet" href="index.css">
     <title>Chamada</title>
 </head>
 
@@ -17,18 +17,30 @@
           return arr; 
           // Only change code above this line
         }
+        /// remove espacos antes depois 
+        /// troca espaco duplo por simples
+        //// converte para maiusculas
+        /// pula linha 
+        //// ordena 
         function formata(texto){
-          let entrada = texto.trim();
-          let ent3=entrada.replace(/  +/g," ")
-          let ent4=ent3.toLocaleUpperCase();  
-          let arr = ent4.split("\n")
-          let valUnicos = [...new Set(arr.sort((a,b) => a === b ? 0 : a > b ? 1 : -1))];   
+          let arr = texto.split("\n")
+          let separados= []
+          arr.forEach(linha => {
+            entrada = linha.trim();
+            ent3=entrada.replace(/  +/g," ")
+            ent4=ent3.toLocaleUpperCase();  
+            if (ent4!=="") separados.push(ent4);
+          });
+          valUnicos = [...new Set(separados.sort((a,b) => a === b ? 0 : a > b ? 1 : -1))];   
           return valUnicos;
         }
 
         function ausentes(total,presentes){
-           let alunosFaltantes=[] ;
-           let alunosPresentes= [];
+          let alunosFaltantes=[] ;
+          let alunosPresentes= [];
+          // console.log("Pres" , presentes);
+          // console.log("Tot" ,total);
+
            let saida = {
              presentes:[],
              ausentes:[],
@@ -36,13 +48,17 @@
            total.forEach( 
                 (alunot) => //console.log(alunot)
                       (presentes.includes(alunot)?
-                        (alunosPresentes.push(alunot))
+                          (alunosPresentes.push(alunot))
                         :
-                        (alunosFaltantes.push(alunot))
+                          (alunosFaltantes.push(alunot))
                       )
             );
-            saida.ausentes = alunosFaltantes.sort((a,b) => a === b ? 0 : a > b ? 1 : -1);
-            saida.presentes = alunosPresentes.sort((a,b) => a === b ? 0 : a > b ? 1 : -1);
+            
+            saida.presentes= [...alunosPresentes]
+            saida.ausentes=  [...alunosFaltantes]
+            
+            // saida.ausentes = alunosFaltantes.sort((a,b) => a === b ? 0 : a > b ? 1 : -1);
+            // saida.presentes = alunosPresentes.sort((a,b) => a === b ? 0 : a > b ? 1 : -1);
             // console.log("Pres" , alunosPresentes);
             // console.log("Aus" ,alunosFaltantes);
             return saida; 
@@ -51,47 +67,90 @@
         function chamada(textAreaPresentesId,textAreaTotalId) {
             var value = document.getElementById(textAreaPresentesId).value;
             var value2 = document.getElementById(textAreaTotalId).value;
-            let saida=[];
+            
+            let saida = {};
 
             let presUnicos = formata(value);
             let totalUnicos = formata(value2);
             //console.log(presUnicos);  
-            //console.log(totalUnicos);  
+            // console.log(totalUnicos);  
+
+            saida= ausentes(totalUnicos,presUnicos);
+
+            let str = "Presentes " + (parseInt(presUnicos.length)).toString() + " alunos";
+            document.getElementById("presentes").innerHTML = JSON.stringify(str);
             
-            let str = "Presentes "  + (parseInt(presUnicos.length)-1).toString() + " alunos";
-            document.getElementById("alunosPresentes").innerHTML = JSON.stringify(str);
+            let str4 = "Presentes <br>"  + saida.presentes.join("<br>");
+            console.log(saida.presentes)
+            document.getElementById("alunosPresentes").innerHTML = JSON.stringify(str4);
             
-            let str2 = "Ausentes "  + ( (parseInt(totalUnicos.length))-(parseInt(presUnicos.length)-1) ).toString() + " alunos";
+            let str2 = "Ausentes "  + ( (parseInt(totalUnicos.length))-(parseInt(presUnicos.length)) ).toString() + " alunos";
             document.getElementById("ausentes").innerHTML = JSON.stringify(str2);
             
-            saida = ausentes(totalUnicos,presUnicos);
-
             let str3 = "Ausentes <br>"  + saida.ausentes.join("<br>");
             document.getElementById("alunosAusentes").innerHTML = JSON.stringify(str3);
 
-            let str4 = "Presentes <br>"  + saida.presentes.join("<br>");
-            document.getElementById("presentes").innerHTML = JSON.stringify(str4);
 
         }
     </script>
-      <label>lista presentes:</label>
-      <br>
-      <textarea rows="4" cols="50" id="listaPresentes">
-     
-      </textarea>
-      <br> 
-      lista total: 
-      <br> 
-   <textarea rows="4" cols="50" id="listaTotal">
-    
-    </textarea> 
-      <br>
-      <button type="button" onclick="chamada('listaPresentes','listaTotal')">Verifica Ausentes</button>
-      <p id="ausentes">ausentes</p> 
-      <p id="alunosAusentes">alunosAusentes</p>
-      <p id="alunosPresentes">alunosPresentes</p>
-      <p id="presentes">presentes</p>
 
+
+    <div class="container">
+      <div class="linha">
+        <label>lista com os alunos presentes:</label>
+        <textarea style="width: 30vw; height: 80vh; max-width: 100%;" id="listaPresentes">
+          1
+                2
+          3
+        </textarea>
+      </div>
+
+      <div class="linha" style="margin-left: 10px;">
+        <label>lista com todos os nomes dos alunos:</label>
+        <textarea style="width: 30vw; height: 80vh; max-width: 100%;" id="listaTotal">
+          1
+2
+    3    
+4
+5   
+        </textarea>
+      </div>
+
+      <div class="linhaEmbaixo" style="margin-left: 10px;">
+        <div>
+          <button 
+            type="button" 
+            onclick="chamada('listaPresentes','listaTotal')"
+            style="height:20px"
+            >
+              Verifica Ausentes
+          </button>
+        </div>
+      
+        <div>
+          <input type="checkbox" id="prof" name="temProf" checked>
+          <label for="scales">Remover o Professor</label>
+        </div>
+        <div>
+          <input type="checkbox" id="prof" name="temProf" checked>
+          <label for="scales">Remover o Professor</label>
+        </div>
+
+
+      </div>
+      <div class="linhaEmbaixo" style="margin-left: 10px;">
+        <div class="linha" style="margin-left: 10px;">
+          <p id="presentes">Nº de alunos presentes</p> 
+          <p id="alunosPresentes">Alunos presentes</p> 
+        </div>
+      </div>
+      <div class="linhaEmbaixo" style="margin-left: 10px;">
+        <div class="linha" style="margin-left: 10px;">
+          <p id="ausentes">Nº de alunos ausentes</p> 
+          <p id="alunosAusentes">Alunos ausentes</p> 
+        </div>
+      </div>
+    </div>
 </body>
 
 </html>

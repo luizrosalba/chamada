@@ -1,0 +1,9 @@
+.container{
+    display: inline-flex;
+}
+.linha{
+    display: grid;
+}
+.linhaEmbaixo{
+    display: block;
+}
